@@ -1,0 +1,16 @@
+
+
+DeviceName  : \\.\DISPLAY1
+Bounds      : {X=-1920,Y=0,Width=1280,Height=720}
+WorkingArea : {X=-1920,Y=0,Width=1280,Height=720}
+
+DeviceName  : \\.\DISPLAY2
+Bounds      : {X=-2520,Y=224,Width=600,Height=1024}
+WorkingArea : {X=-2520,Y=224,Width=600,Height=1024}
+
+DeviceName  : \\.\DISPLAY3
+Bounds      : {X=0,Y=0,Width=1920,Height=1080}
+WorkingArea : {X=0,Y=0,Width=1920,Height=1032}
+
+
+

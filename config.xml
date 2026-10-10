@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.atktransportes" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>ATK</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <icon src="www/assets/atk transportes e logistica.png" />
+    
+    <preference name="SplashScreenDelay" value="2000" />
+    <preference name="FadeSplashScreenDuration" value="500" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <access origin="*" />
+    <platform name="android"> 
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
+     <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/splash/splashscreen.xml" />
+     <preference name="AndroidWindowSplashScreenBackground" value="#0c0d0e" />
+    <icon src="res/mipmap-anydpi-v26/ic_launcher.xml" />
+    <icon monochrome="res/mipmap-mdpi/ic_launcher_monochrome.png" 
+          background="res/mipmap-mdpi/ic_launcher_background.png" 
+          density="mdpi" 
+          foreground="res/mipmap-mdpi/ic_launcher_foreground.png" />
+    <icon monochrome="res/mipmap-hdpi/ic_launcher_monochrome.png" 
+          background="res/mipmap-hdpi/ic_launcher_background.png" 
+          density="hdpi" 
+          foreground="res/mipmap-hdpi/ic_launcher_foreground.png" />
+    <icon monochrome="res/mipmap-xhdpi/ic_launcher_monochrome.png" 
+          background="res/mipmap-xhdpi/ic_launcher_background.png" 
+          density="xhdpi" 
+          foreground="res/mipmap-xhdpi/ic_launcher_foreground.png" />
+    <icon monochrome="res/mipmap-xxhdpi/ic_launcher_monochrome.png" 
+          background="res/mipmap-xxhdpi/ic_launcher_background.png" 
+          density="xxhdpi" 
+          foreground="res/mipmap-xxhdpi/ic_launcher_foreground.png" />
+    <icon monochrome="res/mipmap-xxxhdpi/ic_launcher_monochrome.png" 
+          background="res/mipmap-xxxhdpi/ic_launcher_background.png" 
+          density="xxxhdpi" 
+          foreground="res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
+</platform>
+</widget>
