@@ -1,0 +1,21 @@
+=============================================
+         MOD MOTORISTAS - ATK TRANSPORTES
+=============================================
+
+Olá! Este arquivo (.scs) é exclusivo para o jogo Euro Truck Simulator 2 (ETS2).
+Ele adiciona os motoristas reais da ATK Transportes para você contratar no game!
+
+COMO INSTALAR NO JOGO (PC):
+1. Copie o arquivo do mod (.scs) que está nesta mesma pasta.
+2. Cole-o na pasta de mods do seu jogo, normalmente localizada em:
+   Documentos\Euro Truck Simulator 2\mod
+3. Abra o ETS2, vá no "Gerenciador de Mods" e ative o Mod.
+
+SOBRE ESTE APLICATIVO WEB / MOBILE (ATK-Transportes):
+- Após instalar o mod no seu PC, você pode APAGAR a pasta 'mod_ets2' de dentro dos arquivos
+  do aplicativo ATK Transportes. Isso vai livrar espaço e deixar o app mais leve, 
+  já que o aplicativo em si (celular/web) não utiliza este arquivo de jogo.
+- Se no futuro você formatar o pc ou perder o mod, basta acessar nosso repositório 
+  no GitHub novamente e baixar apenas esta pasta para recuperar seu arquivo!
+
+- Equipe ATK Transportes
