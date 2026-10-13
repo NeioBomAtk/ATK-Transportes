@@ -3099,12 +3099,15 @@ function updateTelemetryUI(data) {
 
     // Status do Caminhão
     if (data.truck) {
-        // Realismo: O painel só marca quando a Elétrica ou o Motor estão ligados!
-        if (data.truck.electricOn || data.truck.engineOn) {
-            const speedKmh = Math.abs(data.truck.speed).toFixed(0); 
+        // Considera ligado se: electricOn OU engineOn OU velocidade > 0 (em movimento real)
+        // O fallback de speed > 0 corrige o bug em carreiras novas onde os flags podem
+        // chegar como false mesmo com o caminhão em pleno movimento.
+        const truckIsActive = data.truck.electricOn || data.truck.engineOn || Math.abs(data.truck.speed || 0) > 0.5;
+        if (truckIsActive) {
+            const speedKmh = Math.abs(data.truck.speed || 0).toFixed(0); 
             document.getElementById('tel-speed').textContent = speedKmh + " km/h";
             
-            const fuel = Math.max(0, data.truck.fuel).toFixed(0);
+            const fuel = Math.max(0, data.truck.fuel || 0).toFixed(0);
             document.getElementById('tel-fuel').textContent = fuel + " L";
             
             const dmg = Math.max(0, (data.truck.damage || data.truck.wearEngine || 0) * 100).toFixed(1);
@@ -3136,8 +3139,13 @@ function updateTelemetryUI(data) {
     const TAXA_BRL = 5.86;
 
     let hasJob = false;
-    if (data.job && data.job.income > 0) {
-        hasJob = true;
+    if (data.job) {
+        // Detecta job ativo de forma robusta: income > 0, OU cidade destino preenchida, OU trailer acoplado com carga
+        if (data.job.income > 0 || 
+            (data.job.destinationCity && data.job.destinationCity.trim() !== '') ||
+            (data.trailer && data.trailer.attached && data.trailer.name)) {
+            hasJob = true;
+        }
     }
 
     if (hasJob) {
