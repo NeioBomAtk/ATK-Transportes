@@ -499,3 +499,31 @@ netsh http show urlacl url=http://+:25555/
 '{5B145135-EC6F-49F7-948D-003C5599F3B2}': 'Conexão Local* 9' (Down), 
 '{021ED455-1B37-4472-B33A-B587B74FA587}': 'Conexão Local* 10' (Down), 
 '{9A49EB9E-4CA8-11F0-ADA1-806E6F6E6963}': 'Loopback Pseudo-Interface 1' (Up)
+2026-10-13 18:58:11,952 [1   ] [INFO ] Running application on Microsoft Windows NT 6.2.9200.0 (64-bit) 
+2026-10-13 18:58:12,153 [1   ] [INFO ] Checking plugin DLL files...
+2026-10-13 18:58:12,153 [1   ] [INFO ] Checking Firewall rule...
+2026-10-13 18:58:12,155 [1   ] [INFO ] Running command line: 
+netsh advfirewall firewall show rule dir=in name=all
+2026-10-13 18:58:13,046 [1   ] [INFO ] Checking ACL rule status...
+2026-10-13 18:58:13,046 [1   ] [INFO ] Running command line: 
+netsh http show urlacl url=http://+:25555/
+2026-10-13 18:58:13,161 [1   ] [INFO ] Found following network interfaces: 
+'{0473E54C-17CB-4B0A-BA0E-A080FD2F5AAE}': 'Ethernet' (Up), 
+'{A9C2A423-170A-4334-BCE3-DF39BA43EA45}': 'Wi-Fi' (Down), 
+'{5B145135-EC6F-49F7-948D-003C5599F3B2}': 'Conexão Local* 9' (Down), 
+'{021ED455-1B37-4472-B33A-B587B74FA587}': 'Conexão Local* 10' (Down), 
+'{9A49EB9E-4CA8-11F0-ADA1-806E6F6E6963}': 'Loopback Pseudo-Interface 1' (Up)
+2026-10-13 19:16:07,907 [1   ] [INFO ] Running application on Microsoft Windows NT 6.2.9200.0 (64-bit) 
+2026-10-13 19:16:07,995 [1   ] [INFO ] Checking plugin DLL files...
+2026-10-13 19:16:07,997 [1   ] [INFO ] Checking Firewall rule...
+2026-10-13 19:16:07,998 [1   ] [INFO ] Running command line: 
+netsh advfirewall firewall show rule dir=in name=all
+2026-10-13 19:16:08,695 [1   ] [INFO ] Checking ACL rule status...
+2026-10-13 19:16:08,695 [1   ] [INFO ] Running command line: 
+netsh http show urlacl url=http://+:25555/
+2026-10-13 19:16:08,779 [1   ] [INFO ] Found following network interfaces: 
+'{0473E54C-17CB-4B0A-BA0E-A080FD2F5AAE}': 'Ethernet' (Up), 
+'{A9C2A423-170A-4334-BCE3-DF39BA43EA45}': 'Wi-Fi' (Down), 
+'{5B145135-EC6F-49F7-948D-003C5599F3B2}': 'Conexão Local* 9' (Down), 
+'{021ED455-1B37-4472-B33A-B587B74FA587}': 'Conexão Local* 10' (Down), 
+'{9A49EB9E-4CA8-11F0-ADA1-806E6F6E6963}': 'Loopback Pseudo-Interface 1' (Up)
