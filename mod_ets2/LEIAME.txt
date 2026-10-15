@@ -12,10 +12,8 @@ COMO INSTALAR NO JOGO (PC):
 3. Abra o ETS2, vá no "Gerenciador de Mods" e ative o Mod.
 
 SOBRE ESTE APLICATIVO WEB / MOBILE (ATK-Transportes):
-- Após instalar o mod no seu PC, você pode APAGAR a pasta 'mod_ets2' de dentro dos arquivos
-  do aplicativo ATK Transportes. Isso vai livrar espaço e deixar o app mais leve, 
-  já que o aplicativo em si (celular/web) não utiliza este arquivo de jogo.
-- Se no futuro você formatar o pc ou perder o mod, basta acessar nosso repositório 
-  no GitHub novamente e baixar apenas esta pasta para recuperar seu arquivo!
+- Este mod é usado pelo ETS2 no PC e não precisa ser copiado para o celular.
+- Mantenha a pasta 'mod_ets2' no projeto ou no repositório para poder instalar
+  novamente o mod caso você formate o PC ou perca o arquivo .scs.
 
 - Equipe ATK Transportes

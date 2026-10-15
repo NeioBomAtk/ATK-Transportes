@@ -40,8 +40,10 @@ O aplicativo foi desenvolvido e homologado especificamente para a telemetria **F
   *Página de Releases para download:* [https://github.com/Funbit/ets2-telemetry-server/releases](https://github.com/Funbit/ets2-telemetry-server/releases)
 
 ### 2. Passo a Passo para Instalação e Execução:
-1. Abra a pasta `Servidor_Telemetria_ATK` (ou a pasta onde você extraiu o servidor baixado).
-2. Execute o arquivo **`Ets2Telemetry.exe`** como **Administrador** na primeira vez para permitir que ele instale o plugin DLL automaticamente dentro da pasta do jogo (`bin\win_x64\plugins`).
+1. **Instalação Automática Global do Plugin (Recomendado):**
+   * Dê dois cliques no arquivo **`instalar_plugin_telemetria.bat`** na raiz do projeto (ou dentro da pasta `Servidor_Telemetria_ATK\Instalar_Plugin_Automatico.bat`).
+   * O script detectará automaticamente o Euro Truck Simulator 2 / ATS em qualquer disco rígido (`C:`, `D:`, `E:`, `F:`, etc.), criará a pasta de plugins se necessário e copiará a DLL da telemetria de forma 100% automática.
+2. Abra a pasta `Servidor_Telemetria_ATK` e execute o arquivo **`Ets2Telemetry.exe`** (como **Administrador** na primeira vez).
 3. O servidor abrirá uma janela indicando que está rodando na porta padrão **25555**.
 
 ### 3. Como Descobrir o seu Endereço IP Local:
@@ -60,7 +62,9 @@ Para conectar seu celular, tablet ou o próprio navegador ao jogo:
    ```
    *(Substitua `SEU_IP` pelo endereço IP do seu computador obtido no passo anterior, por exemplo: `http://192.168.1.50:25555/api/ets2/telemetry`)*.
 4. Clique no botão **Conectar Radar**.
-5. O status passará de `DESCONECTADO` para **`ON-LINE (AO VIVO)`** com fundo verde, passando a sincronizar todos os dados do caminhão automaticamente a cada segundo!
+5. O status passará de `DESCONECTADO` para **`ON-LINE (AO VIVO)`** com fundo verde, passando a sincronizar todos os dados do caminhão automaticamente a cada dois segundos!
+
+**Valor do frete:** no perfil ETS2 com o mapa EAA e a moeda BRL usado neste projeto, o app aplica a taxa 3,5 ao valor interno recebido da telemetria para exibir o mesmo valor mostrado pelo jogo. Outros perfis ou mods de economia podem usar uma taxa diferente.
 
 ---
 

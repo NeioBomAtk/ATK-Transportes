@@ -3037,9 +3037,20 @@ function fetchTelemetryData(url) {
 
     const onDataSuccess = (data) => {
         if (globalTelemetryTimeout) clearTimeout(globalTelemetryTimeout);
-        document.getElementById('telemetry-status-badge').textContent = "ON-LINE (AO VIVO)";
-        document.getElementById('telemetry-status-badge').style.background = "var(--accent-green)";
-        document.getElementById('telemetry-dashboard').style.opacity = "1";
+        const badge = document.getElementById('telemetry-status-badge');
+        const dashboard = document.getElementById('telemetry-dashboard');
+
+        // Verifica se o Euro Truck Simulator 2 está de fato conectado e transmitindo
+        if (data && data.game && data.game.connected) {
+            badge.textContent = "ON-LINE (AO VIVO)";
+            badge.style.background = "var(--accent-green)";
+            dashboard.style.opacity = "1";
+        } else {
+            badge.textContent = "AGUARDANDO ETS2 (JOGO FECHADO/CARREGANDO)";
+            badge.style.background = "#f59e0b"; // Amarelo de alerta informativo
+            dashboard.style.opacity = "0.75";
+        }
+
         updateTelemetryUI(data);
     };
 
@@ -3047,12 +3058,14 @@ function fetchTelemetryData(url) {
         if (globalTelemetryTimeout) clearTimeout(globalTelemetryTimeout);
         console.error("Erro na telemetria:", err);
         const badge = document.getElementById('telemetry-status-badge');
+        const dashboard = document.getElementById('telemetry-dashboard');
         if ((err.message && err.message.includes("fetch")) || err.name === "TypeError" || err.status === -1) {
             badge.textContent = "SEM RESPOSTA DO SERVIDOR (PC)";
         } else {
             badge.textContent = "ERRO: " + (err.message || err.error || err.status);
         }
         badge.style.background = "var(--accent-red)";
+        dashboard.style.opacity = "0.5";
     };
 
     if (window.cordova && cordova.plugin && cordova.plugin.http) {
@@ -3085,8 +3098,10 @@ function fetchTelemetryData(url) {
 function updateTelemetryUI(data) {
     if (!data) return;
 
-    // Converte e atualiza Tempo do Jogo (se disponível)
-    if (data.game && data.game.time) {
+    const isGameConnected = !!(data.game && data.game.connected);
+
+    // Converte e atualiza Tempo do Jogo (se disponível e jogo conectado)
+    if (isGameConnected && data.game.time) {
         const gameDate = new Date(data.game.time);
         if (!isNaN(gameDate)) {
             const h = gameDate.getUTCHours().toString().padStart(2, '0');
@@ -3095,16 +3110,21 @@ function updateTelemetryUI(data) {
             const dayName = days[gameDate.getUTCDay()];
             document.getElementById('tel-game-time').innerHTML = `<i class="fa fa-clock" style="font-size: 1.3rem; margin-right: 5px;"></i> ${dayName} ${h}:${m}`;
         }
+    } else {
+        document.getElementById('tel-game-time').innerHTML = `<i class="fa fa-clock" style="font-size: 1.3rem; margin-right: 5px;"></i> --- --:--`;
     }
 
     // Status do Caminhão
     if (data.truck) {
-        // Considera ligado se: electricOn OU engineOn OU velocidade > 0 OR combustível > 0
-        // Adicional: fuel > 0 como fallback extra para DAF/novos caminhões onde electricOn
-        // pode chegar como false antes da primeira atualização completa do SDK.
-        const truckIsActive = data.truck.electricOn || data.truck.engineOn 
-            || Math.abs(data.truck.speed || 0) > 0.5
-            || (data.truck.fuel || 0) > 0;
+        // Considera ligado se o jogo está conectado E:
+        // elétrica ligada OU motor ligado OU rpm ativo OU em movimento real
+        const truckIsActive = isGameConnected && (
+            data.truck.electricOn || 
+            data.truck.engineOn || 
+            (data.truck.engineRpm && data.truck.engineRpm > 100) ||
+            Math.abs(data.truck.speed || 0) > 0.5
+        );
+
         if (truckIsActive) {
             const speedKmh = Math.abs(data.truck.speed || 0).toFixed(0); 
             document.getElementById('tel-speed').textContent = speedKmh + " km/h";
@@ -3114,15 +3134,21 @@ function updateTelemetryUI(data) {
             
             const dmg = Math.max(0, (data.truck.damage || data.truck.wearEngine || 0) * 100).toFixed(1);
             document.getElementById('tel-damage').textContent = dmg + "%";
-        } else {
+        } else if (isGameConnected) {
+            // Jogo conectado mas caminhão desligado
             document.getElementById('tel-speed').textContent = "0 km/h";
             document.getElementById('tel-fuel').textContent = "OFF";
             document.getElementById('tel-damage').textContent = "OFF";
+        } else {
+            // Jogo não conectado
+            document.getElementById('tel-speed').textContent = "0 km/h";
+            document.getElementById('tel-fuel').textContent = "---";
+            document.getElementById('tel-damage').textContent = "---";
         }
     }
 
     // Status do Reboque / Trailer
-    if (data.trailer && data.trailer.attached) {
+    if (isGameConnected && data.trailer && data.trailer.attached) {
         const trDmg = Math.max(0, (data.trailer.damage || data.trailer.wear || 0) * 100).toFixed(1);
         document.getElementById('tel-trailer-damage').textContent = trDmg + "%";
     } else {
@@ -3135,15 +3161,14 @@ function updateTelemetryUI(data) {
     const elDest = document.getElementById('tel-dest');
     const elIncome = document.getElementById('tel-income');
 
-    // A API nativa do jogo SDK exporta o valor Universal (EURO), 
-    // Precisamos aplicar a taxa de câmbio Oficial do jogo para BRL (Reais).
-    // O ETS2 base atualmente usa uma cotação de aproximadamente ~5.86 para o Real.
-    const TAXA_BRL = 5.86;
+    // A telemetria fornece o valor interno do frete. No perfil ETS2/EAA usado
+    // neste projeto, a moeda BRL do jogo aplica a taxa 3,5 sobre esse valor.
+    // A taxa externa de 5,86 fazia o app exibir um frete maior que o do jogo.
+    const TAXA_BRL_JOGO = 3.5;
 
     let hasJob = false;
-    if (data.job) {
-        // Detecta job ativo de forma robusta (múltiplos fallbacks para cobrir
-        // casos onde a telemetria demora a sincronizar ao iniciar nova carga/caminhão):
+    if (isGameConnected && data.job) {
+        // Detecta job ativo de forma robusta (cobre carreiras novas e quick jobs):
         // 1. income > 0: forma mais confiável
         // 2. destinationCity preenchida: rota definida
         // 3. trailer acoplado com nome definido
@@ -3164,7 +3189,7 @@ function updateTelemetryUI(data) {
         // Nome da carga: A API da Funbit puxa melhor o nome via data.trailer.name
         if (data.trailer && data.trailer.name) {
             const massInTons = Math.round((data.trailer.mass || 0) / 1000);
-            elCargo.textContent = `${data.trailer.name} (${massInTons} t)`;
+            elCargo.textContent = `${data.trailer.name}${massInTons > 0 ? ' (' + massInTons + ' t)' : ''}`;
         } else if (data.job.cargo) {
             elCargo.textContent = data.job.cargo;
         } else {
@@ -3176,7 +3201,7 @@ function updateTelemetryUI(data) {
         
         // Converte o valor em Euro do jogo para Reais
         const incomeEmEuro = data.job.income || 0;
-        const incomeConvertido = Math.round(incomeEmEuro * TAXA_BRL);
+        const incomeConvertido = Math.round(incomeEmEuro * TAXA_BRL_JOGO);
         
         elIncome.textContent = incomeConvertido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     } else {
@@ -3190,7 +3215,7 @@ function updateTelemetryUI(data) {
     const telRestEl = document.getElementById('tel-rest');
     const telRestIcon = document.getElementById('tel-rest-icon');
     if (telRestEl) {
-        if (data.game && data.game.nextRestStopTime) {
+        if (isGameConnected && data.game && data.game.nextRestStopTime) {
             
             // O pulo do gato: A telemetria Ets2Telemetry envia o Tempo Restante de Descanso
             // como um TimeSpan (Tempo Relativo) base do C# e não como um relógio Data absoluta.
@@ -3218,20 +3243,20 @@ function updateTelemetryUI(data) {
                 }
 
                 if (diffHrs === 0 && diffMins === 0) {
-                   telRestEl.textContent = "ESGOTADO"; 
-                   telRestIcon.style.color = 'var(--accent-red)';
-                   telRestEl.style.color = 'var(--accent-red)';
+                    telRestEl.textContent = "ESGOTADO"; 
+                    telRestIcon.style.color = 'var(--accent-red)';
+                    telRestEl.style.color = 'var(--accent-red)';
                 } else {
-                   telRestEl.textContent = `${diffHrs}h ${diffMins}m`;
-                   
-                   // Alertas baseados nas horas restantes
-                   if (diffHrs <= 2) {
-                       telRestIcon.style.color = '#f59e0b'; // Amarelo de Alerta (Perto de acabar)
-                       telRestEl.style.color = '#f59e0b';
-                   } else {
-                       telRestIcon.style.color = '#10b981'; // Verde (Ainda pode dirigir bem)
-                       telRestEl.style.color = 'var(--text-primary)';
-                   }
+                    telRestEl.textContent = `${diffHrs}h ${diffMins}m`;
+                    
+                    // Alertas baseados nas horas restantes
+                    if (diffHrs <= 2) {
+                        telRestIcon.style.color = '#f59e0b'; // Amarelo de Alerta (Perto de acabar)
+                        telRestEl.style.color = '#f59e0b';
+                    } else {
+                        telRestIcon.style.color = '#10b981'; // Verde (Ainda pode dirigir bem)
+                        telRestEl.style.color = 'var(--text-primary)';
+                    }
                 }
             }
         } else {
@@ -3244,7 +3269,7 @@ function updateTelemetryUI(data) {
     // Distância
     const telDistEl = document.getElementById('tel-distance');
     if (telDistEl) {
-        if (data.navigation) {
+        if (isGameConnected && data.navigation) {
             let distMeters = 0;
             if (data.navigation.estimatedDistance !== undefined) {
                 distMeters = data.navigation.estimatedDistance;
