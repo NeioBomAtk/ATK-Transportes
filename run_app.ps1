@@ -1,3 +1,12 @@
+$projectRoot = $PSScriptRoot
+$syncHealthUrl = 'http://127.0.0.1:25556/health'
+try {
+    Invoke-RestMethod -Uri $syncHealthUrl -TimeoutSec 1 | Out-Null
+} catch {
+    Start-Process -FilePath 'node' -ArgumentList "`"$projectRoot\sync-server.js`"" -WorkingDirectory $projectRoot -WindowStyle Hidden
+    Start-Sleep -Milliseconds 500
+}
+
 Start-Process "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList '--app="file:///C:/Apps/atk/www/index.html"'
 Start-Sleep -Seconds 1
 $code = @"

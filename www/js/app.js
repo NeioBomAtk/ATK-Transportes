@@ -118,10 +118,187 @@ function loadState() {
         while(alocIdx < appState.reboques.length) appState.reboques[alocIdx++].cidade = appState.garagens[0].cidade; 
         saveState();
     }
+    schedulePcSyncPublish();
 }
 
 function saveState() {
     localStorage.setItem('atk_state', JSON.stringify(appState));
+    schedulePcSyncPublish();
+}
+
+// Sincronização local PC -> celular. O PC publica após cada salvamento;
+// o celular só importa quando o usuário toca no botão de recebimento.
+const ATK_PC_SYNC_BASE = 'http://127.0.0.1:25556';
+let pcSyncPublishTimer = null;
+let pcSyncToken = null;
+
+function schedulePcSyncPublish() {
+    if (window.cordova) return;
+    clearTimeout(pcSyncPublishTimer);
+    pcSyncPublishTimer = setTimeout(publishPcSyncState, 350);
+}
+
+async function getPcSyncInfo() {
+    const response = await fetch(`${ATK_PC_SYNC_BASE}/info`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Não foi possível consultar o serviço do PC.');
+    const info = await response.json();
+    pcSyncToken = info.token;
+    return info;
+}
+
+async function publishPcSyncState() {
+    if (window.cordova) return;
+    try {
+        if (!pcSyncToken) await getPcSyncInfo();
+        const response = await fetch(`${ATK_PC_SYNC_BASE}/state`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-ATK-Token': pcSyncToken
+            },
+            body: JSON.stringify(appState)
+        });
+        if (!response.ok) throw new Error('O serviço recusou o envio.');
+        const result = await response.json();
+        setPcSyncStatus(`Dados do PC publicados às ${new Date(result.updatedAt).toLocaleTimeString('pt-BR')}.`, 'success');
+    } catch (error) {
+        setPcSyncStatus('Serviço Wi-Fi indisponível. Abra o app pelo run_app.ps1 para iniciar a sincronização.', 'error');
+    }
+}
+
+function setPcSyncStatus(message, type = '') {
+    const status = document.getElementById('pc-sync-status');
+    if (!status) return;
+    status.textContent = message;
+    status.style.color = type === 'success' ? 'var(--accent-green)' :
+        (type === 'error' ? 'var(--accent-red)' : 'var(--text-secondary)');
+}
+
+async function initializeWifiSyncPanel() {
+    const mobilePanel = document.getElementById('mobile-wifi-sync');
+    const pcPanel = document.getElementById('pc-wifi-sync');
+    if (window.cordova) {
+        mobilePanel.classList.remove('hidden');
+        pcPanel.classList.add('hidden');
+        document.getElementById('mobile-sync-url').value = localStorage.getItem('atk_pc_sync_url') || '';
+        document.getElementById('mobile-sync-token').value = localStorage.getItem('atk_pc_sync_token') || '';
+        return;
+    }
+
+    mobilePanel.classList.add('hidden');
+    pcPanel.classList.remove('hidden');
+    try {
+        const info = await getPcSyncInfo();
+        const addresses = info.addresses || [];
+        document.getElementById('pc-sync-addresses').textContent = addresses.length
+            ? addresses.map(ip => `http://${ip}:${info.port}`).join('\n')
+            : 'Nenhum endereço Wi-Fi/Ethernet encontrado.';
+        document.getElementById('pc-sync-token').value = info.token;
+        setPcSyncStatus('Serviço Wi-Fi conectado. O app publica os dados automaticamente ao salvar.', 'success');
+        await publishPcSyncState();
+    } catch (error) {
+        document.getElementById('pc-sync-addresses').textContent = 'Serviço não iniciado.';
+        document.getElementById('pc-sync-token').value = '';
+        setPcSyncStatus('Abra o app usando run_app.ps1 e permita o acesso à rede privada do Windows, se solicitado.', 'error');
+    }
+}
+
+function copyPcSyncToken() {
+    const input = document.getElementById('pc-sync-token');
+    input.select();
+    document.execCommand('copy');
+    customAlert('Código de conexão copiado.', 'success');
+}
+
+function mobileSyncRequest(method, url, body, token) {
+    const headers = { 'X-ATK-Token': token };
+    if (window.cordova && cordova.plugin && cordova.plugin.http) {
+        return new Promise((resolve, reject) => {
+            const success = response => {
+                try {
+                    resolve(typeof response.data === 'string' ? JSON.parse(response.data) : response.data);
+                } catch (error) {
+                    reject(new Error('O PC retornou dados inválidos.'));
+                }
+            };
+            const failure = error => {
+                let message = error.error || error.message || 'Falha de conexão com o PC.';
+                try {
+                    const parsedError = JSON.parse(message);
+                    if (parsedError.error) message = parsedError.error;
+                } catch (_) {
+                    // Some native errors are plain text rather than JSON.
+                }
+                reject(new Error(message));
+            };
+            if (method === 'GET') {
+                cordova.plugin.http.get(url, {}, headers, success, failure);
+            } else {
+                cordova.plugin.http.setDataSerializer('json');
+                cordova.plugin.http.put(url, body, { ...headers, 'Content-Type': 'application/json' }, success, failure);
+            }
+        });
+    }
+
+    return fetch(url, {
+        method,
+        headers: { ...headers, ...(method === 'GET' ? {} : { 'Content-Type': 'application/json' }) },
+        body: method === 'GET' ? undefined : JSON.stringify(body),
+        cache: 'no-store'
+    }).then(async response => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Falha de conexão com o PC.');
+        return result;
+    });
+}
+
+async function receivePcSyncData() {
+    const urlInput = document.getElementById('mobile-sync-url');
+    const tokenInput = document.getElementById('mobile-sync-token');
+    let baseUrl = urlInput.value.trim().replace(/\/+$/, '');
+    const token = tokenInput.value.trim();
+    if (!baseUrl || !token) {
+        customAlert('Informe o endereço e o código exibidos no app do PC.', 'error');
+        return;
+    }
+
+    try {
+        if (!/^https?:\/\//i.test(baseUrl)) baseUrl = `http://${baseUrl}`;
+        const parsedUrl = new URL(baseUrl);
+        if (parsedUrl.protocol !== 'http:' || parsedUrl.username || parsedUrl.password) {
+            throw new Error('Use o endereço HTTP local mostrado no PC.');
+        }
+        if (!parsedUrl.port) parsedUrl.port = '25556';
+        baseUrl = parsedUrl.origin;
+        localStorage.setItem('atk_pc_sync_url', baseUrl);
+        localStorage.setItem('atk_pc_sync_token', token);
+
+        const remote = await mobileSyncRequest('GET', `${baseUrl}/state`, null, token);
+        if (!remote || !remote.state || remote.state.saldo === undefined) {
+            throw new Error('O PC ainda não publicou um estado válido.');
+        }
+
+        const hasLocalProgress = !!localStorage.getItem('atk_state');
+        const timeText = new Date(remote.updatedAt).toLocaleString('pt-BR');
+        if (hasLocalProgress && !confirm(`Receber os dados publicados pelo PC em ${timeText}? O progresso atual deste celular será substituído.`)) return;
+
+        if (hasLocalProgress) {
+            localStorage.setItem('atk_state_backup_before_pc_sync', localStorage.getItem('atk_state'));
+        }
+        appState = { ...appState, ...remote.state };
+        if (appState.dividaBancaria === undefined) appState.dividaBancaria = 0;
+        if (appState.reboques === undefined) appState.reboques = [];
+        if (appState.mapMarkers === undefined) appState.mapMarkers = [];
+        if (appState.inventarioAnual === undefined) appState.inventarioAnual = [];
+        if (appState.ultimoFechamento === undefined) appState.ultimoFechamento = '';
+        localStorage.setItem('atk_state', JSON.stringify(appState));
+        updateDashboard();
+        renderMapMarkers();
+        closeModal('sync-modal');
+        customAlert(`Dados recebidos do PC. Publicação: ${timeText}.`, 'success');
+    } catch (error) {
+        customAlert(error.message || 'Não foi possível receber os dados do PC.', 'error');
+    }
 }
 
 // Atualizar interface
@@ -2713,6 +2890,7 @@ function openSyncModal() {
     document.getElementById('sync-export-code').value = code;
     document.getElementById('sync-import-code').value = "";
     document.getElementById('sync-modal').classList.remove('hidden');
+    initializeWifiSyncPanel();
 }
 
 function copySyncCode() {

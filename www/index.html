@@ -963,11 +963,38 @@
 
     <!-- Modal de Sincronização -->
     <div id="sync-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h2 style="color: var(--accent-blue);"><i class="fa fa-sync-alt"></i> Sincronizar Dados (Nuvem)</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Copie o código do seu celular e cole no PC (ou
-                vice-versa) para manter os dois sempre com o mesmo progresso.</p>
+        <div class="modal-content" style="width: 94%; max-width: 620px; max-height: 90vh; overflow-y: auto;">
+            <section id="pc-wifi-sync" class="hidden" style="padding: 16px; margin-bottom: 18px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="color: var(--accent-green); margin-bottom: 10px;"><i class="fa fa-wifi"></i> Conexão do celular</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 8px;">No celular, use um destes endereços, estando na mesma rede Wi-Fi:</p>
+                <pre id="pc-sync-addresses" style="white-space: pre-wrap; color: var(--text-primary); background: #111; padding: 10px; border-radius: 6px; margin-bottom: 12px;"></pre>
+                <label for="pc-sync-token" style="display: block; color: var(--text-secondary); margin-bottom: 6px;">Código de conexão</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="pc-sync-token" readonly style="flex: 1; min-width: 0; padding: 10px; background: #111; color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px;">
+                    <button type="button" onclick="copyPcSyncToken()" class="btn-confirm" style="padding: 10px 12px;"><i class="fa fa-copy"></i> Copiar</button>
+                </div>
+                <p id="pc-sync-status" role="status" style="margin-top: 10px; font-size: 0.9rem;"></p>
+            </section>
 
+            <section id="mobile-wifi-sync" class="hidden" style="padding: 16px; margin-bottom: 18px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="color: var(--accent-green); margin-bottom: 10px;"><i class="fa fa-wifi"></i> Receber do PC</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px;">Conecte o celular à mesma rede Wi-Fi do PC. Copie o endereço e o código exibidos no botão Sincronizar do app no PC.</p>
+                <div class="form-group">
+                    <label for="mobile-sync-url">Endereço do PC</label>
+                    <input type="text" id="mobile-sync-url" placeholder="Ex.: http://192.168.1.50:25556" autocomplete="off" autocapitalize="off" spellcheck="false">
+                </div>
+                <div class="form-group">
+                    <label for="mobile-sync-token">Código de conexão</label>
+                    <input type="text" id="mobile-sync-token" placeholder="Código exibido no PC" autocomplete="off" autocapitalize="off" spellcheck="false">
+                </div>
+                <button type="button" onclick="receivePcSyncData()" class="btn-confirm" style="width: 100%;"><i class="fa fa-download"></i> Receber dados do PC</button>
+            </section>
+
+            <h2 style="color: var(--accent-blue);"><i class="fa fa-sync-alt"></i> Sincronizar Dados PC e Celular</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">O PC publica os dados administrativos na rede local e o celular os recebe quando você toca no botão. A sincronização por código continua disponível como alternativa.</p>
+
+            <details style="margin-bottom: 18px; color: var(--text-secondary);">
+                <summary style="cursor: pointer; padding: 8px 0;">Sincronização manual por código (alternativa)</summary>
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="color: var(--accent-green); font-weight: bold;">Seu Código Atual (Exportar)</label>
                 <div style="display: flex; gap: 10px;">
@@ -988,6 +1015,8 @@
                     style="background: var(--accent-red); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 100%;"><i
                         class="fa fa-download"></i> Substituir Meus Dados Atuais</button>
             </div>
+
+            </details>
 
             <div class="modal-actions" style="margin-top: 20px;">
                 <button type="button" class="btn-cancel" onclick="closeModal('sync-modal')">Fechar</button>
