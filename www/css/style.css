@@ -93,7 +93,7 @@ body::-webkit-scrollbar {
 
 .nav-btn {
     background: none;
-    border: none;
+    border: 1px solid transparent;
     color: var(--text-secondary);
     font-size: 1rem;
     font-weight: 600;
@@ -104,14 +104,27 @@ body::-webkit-scrollbar {
     white-space: normal; width: max-content; max-width: 250px; text-align: center;
 }
 
+/* Cores distintas para cada aba quando inativa */
+.nav-btn-dashboard { color: #38bdf8; }       /* Azul Claro / Ciano */
+.nav-btn-financas { color: #fbbf24; }        /* Dourado / Amarelo Ouro */
+.nav-btn-inventario { color: #c084fc; }      /* Púrpura / Violeta */
+.nav-btn-frota { color: #2dd4bf; }           /* Turquesa / Menta */
+.nav-btn-equipe { color: #f472b6; }          /* Rosa / Pink */
+.nav-btn-contabilidade { color: #10b981; }   /* Verde Esmeralda */
+.nav-btn-sincronizar { color: #3b82f6; }     /* Azul Vibrante */
+.nav-btn-apostila { color: #ff9800; }        /* Laranja */
+.nav-btn-recomecar { color: #d906f5; }       /* Vermelho */
+
 .nav-btn:hover {
     background-color: var(--bg-card-hover);
-    color: var(--text-primary);
+    filter: brightness(1.25);
 }
 
 .nav-btn.active {
-    background-color: rgba(225, 29, 72, 0.1);
-    color: var(--accent-red);
+    background-color: rgba(225, 29, 72, 0.15) !important;
+    color: var(--accent-red) !important;
+    border-color: rgba(225, 29, 72, 0.4) !important;
+    box-shadow: 0 0 10px rgba(225, 29, 72, 0.2);
 }
 
 /* Dashboard Config */
