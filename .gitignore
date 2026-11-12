@@ -28,3 +28,6 @@ node_modules/
 .atk-sync-token
 /.gradle-build/
 /.android-user/
+
+# Chrome isolated profile
+ChromeProfile/

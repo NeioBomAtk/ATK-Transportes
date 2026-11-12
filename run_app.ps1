@@ -1,4 +1,4 @@
-﻿$projectRoot = $PSScriptRoot
+$projectRoot = $PSScriptRoot
 $syncHealthUrl = 'http://127.0.0.1:25556/health'
 try {
     Invoke-RestMethod -Uri $syncHealthUrl -TimeoutSec 1 | Out-Null
