@@ -7,10 +7,11 @@ try {
     Start-Sleep -Milliseconds 500
 }
 
-# Se já houver uma janela antiga do ATK aberta, fecha para aplicar o modo sem barra
-Get-Process chrome -ErrorAction SilentlyContinue | Where-Object { 
-    $_.MainWindowHandle -ne [IntPtr]::Zero -and ($_.MainWindowTitle -match "ATK" -or $_.MainWindowTitle -match "Transportes")
-} | Stop-Process -Force -ErrorAction SilentlyContinue
+# Perfil isolado e exclusivo para o app ATK (desmembrando do Chrome pessoal do usuario)
+$profileDir = "C:\Apps\atk\ChromeProfile"
+if (-not (Test-Path $profileDir)) {
+    New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
+}
 
 # Carregar assemblies do Windows Forms para detecção dinâmica de monitores
 Add-Type -AssemblyName System.Windows.Forms
@@ -28,46 +29,12 @@ if (-not $targetScreen) {
     $targetScreen = [System.Windows.Forms.Screen]::PrimaryScreen
 }
 
-# Usar Bounds completos da tela de 7 polegadas para ocupar 100% da tela sem barras
+# Usar Bounds completos da tela de 7 polegadas
 $posX = $targetScreen.Bounds.X
 $posY = $targetScreen.Bounds.Y
 $posW = $targetScreen.Bounds.Width
 $posH = $targetScreen.Bounds.Height
 
-# Iniciar o Chrome em modo App + Kiosk (elimina a barra cinza de titulo do navegador)
-$chromeArgs = "--app=`"file:///C:/Apps/atk/www/index.html`" --kiosk --window-position=$posX,$posY --window-size=$posW,$posH"
+# Argumentos do Chrome: perfil dedicado (--user-data-dir), sem barra (--kiosk) e na posicao correta
+$chromeArgs = "--user-data-dir=`"$profileDir`" --app=`"file:///C:/Apps/atk/www/index.html`" --kiosk --window-position=$posX,$posY --window-size=$posW,$posH --no-first-run --no-default-browser-check"
 Start-Process "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList $chromeArgs
-
-# Definir funcoes Win32 para garantir o posicionamento exato na tela de 7 polegadas
-$code = @"
-using System;
-using System.Runtime.InteropServices;
-public class Win32 {
-    [DllImport("user32.dll")]
-    public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-    [DllImport("user32.dll")]
-    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-    [DllImport("user32.dll")]
-    public static extern bool SetForegroundWindow(IntPtr hWnd);
-}
-"@
-Add-Type -TypeDefinition $code -ErrorAction SilentlyContinue
-
-# Aguardar ate a janela do app estar pronta
-$hwnd = [IntPtr]::Zero
-for ($i = 0; $i -lt 15; $i++) {
-    Start-Sleep -Milliseconds 300
-    $procs = Get-Process chrome -ErrorAction SilentlyContinue | Where-Object { 
-        $_.MainWindowHandle -ne [IntPtr]::Zero -and ($_.MainWindowTitle -match "ATK" -or $_.MainWindowTitle -match "Transportes")
-    }
-    if ($procs -and $procs.Count -gt 0) {
-        $hwnd = $procs[0].MainWindowHandle
-        break
-    }
-}
-
-if ($hwnd -ne [IntPtr]::Zero) {
-    # 0x0040 = SWP_SHOWWINDOW
-    [Win32]::SetWindowPos($hwnd, [IntPtr]::Zero, $posX, $posY, $posW, $posH, 0x0040)
-    [Win32]::SetForegroundWindow($hwnd)
-}
