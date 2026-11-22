@@ -639,12 +639,12 @@ select option {
     100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
 }
 
-/* Placa de Limite de Velocidade (Estilo ETS2 - Gêmea do Logo) */
+/* Placa de Limite de Velocidade (Estilo ETS2 - Gêmea Exata do Logo) */
 .speed-sign {
-    width: 68px;
-    height: 68px;
+    width: 62px;
+    height: 62px;
     background: #ffffff;
-    border: 6px solid #dc2626;
+    border: 5px solid #dc2626;
     border-radius: 50%;
     display: none; /* Inicia oculta, visível APENAS na aba Contabilidade ATK */
     flex-direction: column;
@@ -652,13 +652,13 @@ select option {
     justify-content: center;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 0 5px rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
-    margin-top: 6px; /* Alinhamento na mesma altura do logo */
+    margin-top: 22px; /* Alinhamento na mesma linha horizontal do centro do logo */
     transition: all 0.3s ease;
     user-select: none;
 }
 
 .speed-sign #speed-limit-val {
-    font-size: 1.65rem;
+    font-size: 1.55rem;
     font-weight: 900;
     color: #111827;
     line-height: 1;
@@ -666,7 +666,7 @@ select option {
 }
 
 .speed-sign .speed-sign-unit {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 900;
     color: #1f2937;
     margin-top: -1px;
@@ -690,8 +690,8 @@ select option {
     position: relative;
     width: 100%;
     height: 42px;
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid var(--border-color);
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(59, 130, 246, 0.4);
     border-radius: 6px;
     overflow: hidden;
     cursor: pointer;
@@ -704,7 +704,7 @@ select option {
 .telemetry-marquee-container:hover,
 .telemetry-marquee-container.editing {
     border-color: var(--accent-blue);
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .telemetry-marquee-track {
@@ -716,23 +716,25 @@ select option {
     animation: trueMarquee 15s linear infinite;
 }
 
+/* Texto em Branco Chamativo com Alto Contraste */
 .telemetry-marquee-track .marquee-item {
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 0.95rem;
-    font-weight: 600;
-    color: #38bdf8;
-    padding: 0 12px;
+    font-weight: 700;
+    color: #ffffff !important;
+    padding: 0 14px;
     letter-spacing: 0.5px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .telemetry-marquee-track .marquee-separator {
-    color: #ef4444;
-    font-size: 0.75rem;
+    color: #38bdf8;
+    font-size: 0.8rem;
     padding: 0 8px;
-    opacity: 0.7;
+    opacity: 0.85;
 }
 
-/* Loop contínuo: de 0% até -50%, sem parar e sem ir/voltar */
+/* Loop contínuo de verdade: da direita p/ esquerda de 0% até -50% */
 @keyframes trueMarquee {
     0% {
         transform: translateX(0%);
