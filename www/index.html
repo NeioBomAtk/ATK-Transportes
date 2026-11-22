@@ -13,11 +13,19 @@
 
 <body>
     <header class="app-header">
-        <div class="logo-container" style="display: flex; justify-content: center; width: 100%; text-align: center;">
-            <div>
-                <h1>ATK Transportes</h1>
-                <p style="color: var(--accent-blue); font-weight: 600; font-size: 1.1rem; letter-spacing: 1px;">Gestão e
-                    Logística</p>
+        <div class="header-top-bar" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 10px;">
+            <!-- Espaço do logo à esquerda (para equilíbrio e simetria com a logo do fundo) -->
+            <div class="header-logo-spacer" style="width: 52px; height: 52px; flex-shrink: 0;"></div>
+
+            <div class="logo-container" style="text-align: center; flex-grow: 1;">
+                <h1 style="margin: 0; font-size: 1.5rem;">ATK Transportes</h1>
+                <p style="color: var(--accent-blue); font-weight: 600; font-size: 1.1rem; letter-spacing: 1px; margin: 0;">Gestão e Logística</p>
+            </div>
+
+            <!-- Placa de Limite de Velocidade da Via (Padrão Regulamentar ETS2) -->
+            <div id="speed-limit-sign" class="speed-sign" title="Limite de Velocidade da Via">
+                <span id="speed-limit-val">--</span>
+                <span class="speed-sign-unit">km/h</span>
             </div>
         </div>
         <nav class="main-nav" style="margin-top: 15px;">

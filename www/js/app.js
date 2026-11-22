@@ -3311,7 +3311,30 @@ function updateTelemetryUI(data) {
             document.getElementById('tel-fuel').textContent = fuel + " L";
             
             const dmg = Math.max(0, (data.truck.damage || data.truck.wearEngine || 0) * 100).toFixed(1);
+            
             document.getElementById('tel-damage').textContent = dmg + "%";
+            
+            // Atualiza Limite de Velocidade da Via (Placa de Trânsito)
+            const speedLimitSign = document.getElementById('speed-limit-sign');
+            const speedLimitVal = document.getElementById('speed-limit-val');
+            if (speedLimitSign && speedLimitVal) {
+                let limit = 0;
+                if (isGameConnected && data.navigation && data.navigation.speedLimit !== undefined) {
+                    limit = Math.round(data.navigation.speedLimit);
+                }
+                const currentSpeedNum = Number(speedKmh) || 0;
+                if (limit > 0) {
+                    speedLimitVal.textContent = limit;
+                    if (currentSpeedNum > (limit + 1)) {
+                        speedLimitSign.classList.add('overspeed');
+                    } else {
+                        speedLimitSign.classList.remove('overspeed');
+                    }
+                } else {
+                    speedLimitVal.textContent = "--";
+                    speedLimitSign.classList.remove('overspeed');
+                }
+            }
         } else if (isGameConnected) {
             // Jogo conectado mas caminhão desligado
             document.getElementById('tel-speed').textContent = "0 km/h";
@@ -3322,6 +3345,10 @@ function updateTelemetryUI(data) {
             document.getElementById('tel-speed').textContent = "0 km/h";
             document.getElementById('tel-fuel').textContent = "---";
             document.getElementById('tel-damage').textContent = "---";
+            const speedLimitValReset = document.getElementById('speed-limit-val');
+            const speedLimitSignReset = document.getElementById('speed-limit-sign');
+            if (speedLimitValReset) speedLimitValReset.textContent = "--";
+            if (speedLimitSignReset) speedLimitSignReset.classList.remove('overspeed');
         }
     }
 
@@ -3522,3 +3549,90 @@ window.zoomGridApostila = function(imgEl) {
         imgEl.style.zIndex = '1';
     }, 3500);
 };
+
+
+// ==========================================
+// ATK: Manter Tela Sempre Ativa (Wake Lock API)
+// ==========================================
+let wakeLockSentinel = null;
+async function requestScreenWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLockSentinel = await navigator.wakeLock.request('screen');
+            console.log('ATK: Screen Wake Lock ativo com sucesso!');
+            wakeLockSentinel.addEventListener('release', () => {
+                wakeLockSentinel = null;
+            });
+        }
+    } catch (err) {
+        console.log('ATK Wake Lock status:', err.message);
+    }
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        requestScreenWakeLock();
+    }
+});
+window.addEventListener('DOMContentLoaded', requestScreenWakeLock);
+document.addEventListener('deviceready', requestScreenWakeLock);
+
+// ==========================================
+// ATK: Letreiro Contínuo no Input de Telemetria
+// ==========================================
+(function initTelemetryMarquee() {
+    const input = document.getElementById('telemetry-url');
+    if (!input) return;
+
+    let isEditing = false;
+    let resumeTimer = null;
+    let scrollStep = 1;
+    let direction = 1;
+    let pauseCounter = 0;
+
+    input.addEventListener('focus', () => {
+        isEditing = true;
+        clearTimeout(resumeTimer);
+        input.classList.remove('marquee-active');
+    });
+
+    input.addEventListener('input', () => {
+        isEditing = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(() => {
+            isEditing = false;
+        }, 4000);
+    });
+
+    input.addEventListener('blur', () => {
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(() => {
+            isEditing = false;
+        }, 3000);
+    });
+
+    setInterval(() => {
+        if (isEditing || document.activeElement === input) return;
+
+        const maxScroll = input.scrollWidth - input.clientWidth;
+        if (maxScroll <= 0) return;
+
+        input.classList.add('marquee-active');
+
+        if (pauseCounter > 0) {
+            pauseCounter--;
+            return;
+        }
+
+        input.scrollLeft += direction * scrollStep;
+
+        if (input.scrollLeft >= maxScroll) {
+            input.scrollLeft = maxScroll;
+            direction = -1;
+            pauseCounter = 35; // pausa ~1.7s na direita
+        } else if (input.scrollLeft <= 0) {
+            input.scrollLeft = 0;
+            direction = 1;
+            pauseCounter = 35; // pausa ~1.7s na esquerda
+        }
+    }, 50);
+})();
