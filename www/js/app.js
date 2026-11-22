@@ -3593,10 +3593,9 @@ document.addEventListener('deviceready', requestScreenWakeLock);
 // ==========================================
 function updateSpeedSignVisibility(tabName) {
     const sign = document.getElementById('speed-limit-sign');
-    const spacer = document.getElementById('header-logo-spacer');
     const isContabilidade = tabName && tabName.toLowerCase().includes('contabilidade');
+    // A placa agora fica dentro da seção Contabilidade, não no header - apenas controla visibilidade
     if (sign) sign.style.display = isContabilidade ? 'flex' : 'none';
-    if (spacer) spacer.style.display = isContabilidade ? 'block' : 'none';
 }
 
 // ==========================================

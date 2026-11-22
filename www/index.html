@@ -20,17 +20,11 @@
     <header class="app-header">
         <div class="header-top-bar" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 10px;">
             <!-- Espaço do logo à esquerda (para equilíbrio e simetria perfeita com a logo do fundo) -->
-            <div id="header-logo-spacer" class="header-logo-spacer" style="width: 62px; height: 62px; flex-shrink: 0; margin-top: 22px; display: none;"></div>
+            <div id="header-logo-spacer" class="header-logo-spacer" style="display: none;"></div>
 
             <div class="logo-container" style="text-align: center; flex-grow: 1;">
                 <h1 style="margin: 0; font-size: 1.5rem;">ATK Transportes</h1>
                 <p style="color: var(--accent-blue); font-weight: 600; font-size: 1.1rem; letter-spacing: 1px; margin: 0;">Gestão e Logística</p>
-            </div>
-
-            <!-- Placa de Limite de Velocidade da Via (Gêmea do Logo - Visível apenas na Contabilidade) -->
-            <div id="speed-limit-sign" class="speed-sign" title="Limite de Velocidade da Via" style="display: none;">
-                <span id="speed-limit-val">--</span>
-                <span class="speed-sign-unit">km/h</span>
             </div>
         </div>
         <nav class="main-nav" style="margin-top: 15px;">
@@ -234,18 +228,25 @@
 
         <!-- VIEW: CONTABILIDADE ATK (TELEMETRIA) -->
         <div id="view-contabilidade" class="view-section">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; margin-top: -15px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="color: var(--accent-green); font-size: clamp(1.1rem, 4vw, 1.5rem); margin: 0;"><i
-                        class="fa fa-satellite-dish"></i> Contabilidade ATK (Ao Vivo)</h2>
-                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                    <div id="telemetry-status-badge"
-                        style="background: var(--text-secondary); padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: white; white-space: nowrap;">
-                        DESCONECTADO</div>
-                    <button class="action-btn info"
-                        style="background-color: var(--accent-blue); padding: 8px 12px; font-size: 0.85rem; white-space: nowrap;"
-                        onclick="toggleTelemetry()"><i class="fa fa-wifi"></i> <span id="telemetry-btn-text">Conectar
-                            Radar</span></button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; margin-top: -10px; gap: 10px; width: 100%; flex-wrap: wrap;">
+                <!-- Título + Botões (lado esquerdo / centro) -->
+                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; flex: 1 1 auto; min-width: 0;">
+                    <h2 style="color: var(--accent-green); font-size: clamp(1.1rem, 4vw, 1.4rem); margin: 0;"><i
+                            class="fa fa-satellite-dish"></i> Contabilidade ATK (Ao Vivo)</h2>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <div id="telemetry-status-badge"
+                            style="background: var(--text-secondary); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: white; white-space: nowrap;">
+                            DESCONECTADO</div>
+                        <button class="action-btn info"
+                            style="background-color: var(--accent-blue); padding: 8px 14px; font-size: 0.85rem; white-space: nowrap;"
+                            onclick="toggleTelemetry()"><i class="fa fa-wifi"></i> <span id="telemetry-btn-text">Conectar
+                                Radar</span></button>
+                    </div>
+                </div>
+                <!-- Placa de Velocidade (lado direito, sempre visível enquanto na aba Contabilidade) -->
+                <div id="speed-limit-sign" class="speed-sign" title="Limite de Velocidade da Via" style="display: none; flex-shrink: 0;">
+                    <span id="speed-limit-val">--</span>
+                    <span class="speed-sign-unit">km/h</span>
                 </div>
             </div>
 

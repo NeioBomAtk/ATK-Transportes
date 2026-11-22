@@ -389,7 +389,7 @@ body::-webkit-scrollbar {
         width: 74px;
         height: 74px;
         border: 6px solid #dc2626;
-        margin-top: 14px;
+        margin-top: 0;
     }
 
     .speed-sign #speed-limit-val {
@@ -673,7 +673,7 @@ select option {
     justify-content: center;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 0 5px rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
-    margin-top: 22px; /* Alinhamento na mesma linha horizontal do centro do logo */
+    margin-top: 0; /* Placa dentro da aba Contabilidade - sem deslocamento do header */
     transition: all 0.3s ease;
     user-select: none;
 }
@@ -769,10 +769,11 @@ select option {
 html.is-telinha .speed-sign,
 body.is-telinha .speed-sign,
 .is-telinha .speed-sign {
-    width: 92px !important;
-    height: 92px !important;
-    border: 7px solid #dc2626 !important;
-    margin-top: 45px !important; /* Desce e expande a placa para nivelar perfeitamente com o logo (altura 114px e centro Y=70) */
+    width: 72px !important;
+    height: 72px !important;
+    border: 6px solid #dc2626 !important;
+    margin-top: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 html.is-telinha .speed-sign #speed-limit-val,
@@ -790,7 +791,5 @@ body.is-telinha .speed-sign .speed-sign-unit,
 html.is-telinha #header-logo-spacer,
 body.is-telinha #header-logo-spacer,
 .is-telinha #header-logo-spacer {
-    width: 92px !important;
-    height: 92px !important;
-    margin-top: 45px !important;
+    display: none !important;
 }
