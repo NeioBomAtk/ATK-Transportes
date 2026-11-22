@@ -377,12 +377,33 @@ body::-webkit-scrollbar {
     }
 }
 
-/* Telinha de 7 polegadas (600x1024) */
-@media (min-width: 590px) and (max-width: 610px) and (min-height: 1000px) {
+/* Telinha de 7 polegadas (600x1024 / 614x1093) */
+@media (min-width: 580px) and (max-width: 650px) and (min-height: 950px) {
     body {
         background-size: cover;
-        /* O valor -80px puxa a imagem para cima. Se quiser o logo mais para cima, aumente para -100px. Mais para baixo, diminua para -50px ou 0px */
-        background-position: center -80px;
+        /* -65px desce o logo para alinhar perfeitamente com a placa */
+        background-position: center -65px;
+    }
+
+    .speed-sign {
+        width: 74px;
+        height: 74px;
+        border: 6px solid #dc2626;
+        margin-top: 14px;
+    }
+
+    .speed-sign #speed-limit-val {
+        font-size: 1.85rem;
+    }
+
+    .speed-sign .speed-sign-unit {
+        font-size: 0.72rem;
+    }
+
+    #header-logo-spacer {
+        width: 74px;
+        height: 74px;
+        margin-top: 14px;
     }
 }
 
