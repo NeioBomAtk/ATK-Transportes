@@ -764,3 +764,33 @@ select option {
         transform: translateX(-50%);
     }
 }
+
+/* Calibração Exclusiva para a Telinha de 7 polegadas do PC (Sem afetar o celular) */
+html.is-telinha .speed-sign,
+body.is-telinha .speed-sign,
+.is-telinha .speed-sign {
+    width: 92px !important;
+    height: 92px !important;
+    border: 7px solid #dc2626 !important;
+    margin-top: 45px !important; /* Desce e expande a placa para nivelar perfeitamente com o logo (altura 114px e centro Y=70) */
+}
+
+html.is-telinha .speed-sign #speed-limit-val,
+body.is-telinha .speed-sign #speed-limit-val,
+.is-telinha .speed-sign #speed-limit-val {
+    font-size: 2.3rem !important;
+}
+
+html.is-telinha .speed-sign .speed-sign-unit,
+body.is-telinha .speed-sign .speed-sign-unit,
+.is-telinha .speed-sign .speed-sign-unit {
+    font-size: 0.85rem !important;
+}
+
+html.is-telinha #header-logo-spacer,
+body.is-telinha #header-logo-spacer,
+.is-telinha #header-logo-spacer {
+    width: 92px !important;
+    height: 92px !important;
+    margin-top: 45px !important;
+}

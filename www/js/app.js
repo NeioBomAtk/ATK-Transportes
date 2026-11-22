@@ -1,3 +1,12 @@
+// Detecta ambiente: Celular (Android/Cordova) vs Telinha do PC (Windows)
+const isMobileDevice = !!(window.cordova || /Android|iPhone|iPad/i.test(navigator.userAgent));
+if (!isMobileDevice) {
+    document.documentElement.classList.add('is-telinha');
+    window.addEventListener('DOMContentLoaded', () => {
+        if (document.body) document.body.classList.add('is-telinha');
+    });
+}
+
 // ATK Transportes - Lógica Principal do App
 
 // Estado inicial (ou carregado do LocalStorage)

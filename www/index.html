@@ -9,6 +9,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/modal-style.css">
+    <script>
+        if (!window.cordova && !/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+            document.documentElement.classList.add('is-telinha');
+        }
+    </script>
 </head>
 
 <body>
