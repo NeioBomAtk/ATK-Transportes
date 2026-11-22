@@ -1181,6 +1181,9 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         if(targetText.includes('frota')) document.getElementById('view-frota').classList.add('active');
         if(targetText.includes('equipe')) document.getElementById('view-equipe').classList.add('active');
         if(targetText.includes('contabilidade atk')) document.getElementById('view-contabilidade').classList.add('active');
+        
+        // Controlar visibilidade da placa de velocidade: APENAS na tela Contabilidade ATK
+        updateSpeedSignVisibility(targetText);
         if(targetText.includes('apostila')) document.getElementById('view-apostila').classList.add('active');
     });
 });
@@ -3577,62 +3580,93 @@ window.addEventListener('DOMContentLoaded', requestScreenWakeLock);
 document.addEventListener('deviceready', requestScreenWakeLock);
 
 // ==========================================
-// ATK: Letreiro Contínuo no Input de Telemetria
+// ATK: Controle da Placa de Velocidade (Apenas na Contabilidade)
 // ==========================================
-(function initTelemetryMarquee() {
+function updateSpeedSignVisibility(tabName) {
+    const sign = document.getElementById('speed-limit-sign');
+    const spacer = document.getElementById('header-logo-spacer');
+    const isContabilidade = tabName && tabName.toLowerCase().includes('contabilidade');
+    if (sign) sign.style.display = isContabilidade ? 'flex' : 'none';
+    if (spacer) spacer.style.display = isContabilidade ? 'block' : 'none';
+}
+
+// ==========================================
+// ATK: Letreiro Contínuo de Verdade (Painel Ticker da Direita p/ Esquerda)
+// ==========================================
+(function setupTelemetryMarquee() {
+    const box = document.getElementById('telemetry-marquee-box');
+    const track = document.getElementById('telemetry-marquee-content');
     const input = document.getElementById('telemetry-url');
-    if (!input) return;
+    const text1 = document.getElementById('marquee-text-1');
+    const text2 = document.getElementById('marquee-text-2');
+    const hint = document.getElementById('marquee-edit-hint');
+
+    if (!box || !track || !input) return;
 
     let isEditing = false;
-    let resumeTimer = null;
-    let scrollStep = 1;
-    let direction = 1;
-    let pauseCounter = 0;
+    let resumeTimeout = null;
 
-    input.addEventListener('focus', () => {
+    function syncText() {
+        const val = (input.value && input.value.trim() !== '') ? input.value.trim() : 'http://192.168.1.167:25555/api/ets2/telemetry';
+        if (text1) text1.textContent = val;
+        if (text2) text2.textContent = val;
+    }
+
+    syncText();
+
+    function startEditing() {
+        if (isEditing) return;
         isEditing = true;
-        clearTimeout(resumeTimer);
-        input.classList.remove('marquee-active');
+        clearTimeout(resumeTimeout);
+        track.style.display = 'none';
+        input.style.display = 'block';
+        box.classList.add('editing');
+        if (hint) hint.innerHTML = '<i class="fa fa-check" style="color: var(--accent-green);"></i> Editando...';
+        input.focus();
+        input.select();
+    }
+
+    function stopEditing() {
+        clearTimeout(resumeTimeout);
+        resumeTimeout = setTimeout(() => {
+            isEditing = false;
+            syncText();
+            input.style.display = 'none';
+            track.style.display = 'flex';
+            box.classList.remove('editing');
+            if (hint) hint.innerHTML = '<i class="fa fa-pencil-alt"></i> Toque p/ editar';
+            localStorage.setItem('atk_telemetry_url', input.value);
+        }, 3000); // 3 segundos de folga para retomar o letreiro
+    }
+
+    box.addEventListener('click', () => {
+        if (!isEditing) startEditing();
     });
+
+    if (hint) {
+        hint.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startEditing();
+        });
+    }
 
     input.addEventListener('input', () => {
-        isEditing = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(() => {
-            isEditing = false;
-        }, 4000);
+        clearTimeout(resumeTimeout);
+        syncText();
+        resumeTimeout = setTimeout(stopEditing, 4000);
     });
 
-    input.addEventListener('blur', () => {
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(() => {
-            isEditing = false;
-        }, 3000);
+    input.addEventListener('blur', stopEditing);
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            stopEditing();
+            input.blur();
+        }
     });
 
-    setInterval(() => {
-        if (isEditing || document.activeElement === input) return;
-
-        const maxScroll = input.scrollWidth - input.clientWidth;
-        if (maxScroll <= 0) return;
-
-        input.classList.add('marquee-active');
-
-        if (pauseCounter > 0) {
-            pauseCounter--;
-            return;
-        }
-
-        input.scrollLeft += direction * scrollStep;
-
-        if (input.scrollLeft >= maxScroll) {
-            input.scrollLeft = maxScroll;
-            direction = -1;
-            pauseCounter = 35; // pausa ~1.7s na direita
-        } else if (input.scrollLeft <= 0) {
-            input.scrollLeft = 0;
-            direction = 1;
-            pauseCounter = 35; // pausa ~1.7s na esquerda
-        }
-    }, 50);
+    window.addEventListener('load', () => {
+        syncText();
+        updateSpeedSignVisibility('dashboard');
+    });
 })();

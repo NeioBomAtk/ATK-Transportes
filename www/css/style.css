@@ -639,25 +639,26 @@ select option {
     100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
 }
 
-/* Placa de Limite de Velocidade (Estilo ETS2) */
+/* Placa de Limite de Velocidade (Estilo ETS2 - Gêmea do Logo) */
 .speed-sign {
-    width: 52px;
-    height: 52px;
+    width: 68px;
+    height: 68px;
     background: #ffffff;
-    border: 5px solid #dc2626;
+    border: 6px solid #dc2626;
     border-radius: 50%;
-    display: flex;
+    display: none; /* Inicia oculta, visível APENAS na aba Contabilidade ATK */
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), inset 0 0 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 0 5px rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
+    margin-top: 6px; /* Alinhamento na mesma altura do logo */
     transition: all 0.3s ease;
     user-select: none;
 }
 
 .speed-sign #speed-limit-val {
-    font-size: 1.25rem;
+    font-size: 1.65rem;
     font-weight: 900;
     color: #111827;
     line-height: 1;
@@ -665,9 +666,9 @@ select option {
 }
 
 .speed-sign .speed-sign-unit {
-    font-size: 0.55rem;
-    font-weight: 800;
-    color: #374151;
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #1f2937;
     margin-top: -1px;
     letter-spacing: -0.5px;
 }
@@ -675,7 +676,7 @@ select option {
 /* Alerta visual ao ultrapassar limite da via */
 .speed-sign.overspeed {
     border-color: #ef4444;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.9), inset 0 0 6px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.95), inset 0 0 6px rgba(239, 68, 68, 0.5);
     animation: speedPulse 0.7s infinite alternate;
 }
 
@@ -684,10 +685,59 @@ select option {
     to { transform: scale(1.08); }
 }
 
-/* Efeito Letreiro Suave no Input de Telemetria */
-#telemetry-url {
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+/* Container do Letreiro Estilo Painel Ticker Contínuo */
+.telemetry-marquee-container {
+    position: relative;
+    width: 100%;
+    height: 42px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-#telemetry-url.marquee-active {
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+
+.telemetry-marquee-container:hover,
+.telemetry-marquee-container.editing {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.telemetry-marquee-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    width: max-content;
+    will-change: transform;
+    animation: trueMarquee 15s linear infinite;
+}
+
+.telemetry-marquee-track .marquee-item {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #38bdf8;
+    padding: 0 12px;
+    letter-spacing: 0.5px;
+}
+
+.telemetry-marquee-track .marquee-separator {
+    color: #ef4444;
+    font-size: 0.75rem;
+    padding: 0 8px;
+    opacity: 0.7;
+}
+
+/* Loop contínuo: de 0% até -50%, sem parar e sem ir/voltar */
+@keyframes trueMarquee {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }

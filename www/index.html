@@ -14,16 +14,16 @@
 <body>
     <header class="app-header">
         <div class="header-top-bar" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 10px;">
-            <!-- Espaço do logo à esquerda (para equilíbrio e simetria com a logo do fundo) -->
-            <div class="header-logo-spacer" style="width: 52px; height: 52px; flex-shrink: 0;"></div>
+            <!-- Espaço do logo à esquerda (para equilíbrio e simetria perfeita com a logo do fundo) -->
+            <div id="header-logo-spacer" class="header-logo-spacer" style="width: 68px; height: 68px; flex-shrink: 0; margin-top: 6px; display: none;"></div>
 
             <div class="logo-container" style="text-align: center; flex-grow: 1;">
                 <h1 style="margin: 0; font-size: 1.5rem;">ATK Transportes</h1>
                 <p style="color: var(--accent-blue); font-weight: 600; font-size: 1.1rem; letter-spacing: 1px; margin: 0;">Gestão e Logística</p>
             </div>
 
-            <!-- Placa de Limite de Velocidade da Via (Padrão Regulamentar ETS2) -->
-            <div id="speed-limit-sign" class="speed-sign" title="Limite de Velocidade da Via">
+            <!-- Placa de Limite de Velocidade da Via (Gêmea do Logo - Visível apenas na Contabilidade) -->
+            <div id="speed-limit-sign" class="speed-sign" title="Limite de Velocidade da Via" style="display: none;">
                 <span id="speed-limit-val">--</span>
                 <span class="speed-sign-unit">km/h</span>
             </div>
@@ -247,13 +247,23 @@
 
             <div class="form-group"
                 style="margin-bottom: 0.8rem; background: var(--bg-dark); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                <label for="telemetry-url" style="color: var(--accent-blue); font-weight: bold;">Endereço IP do Servidor
-                    de Telemetria (LocalBase)</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="telemetry-url" value="http://192.168.1.167:25555/api/ets2/telemetry"
-                        placeholder="Ex: http://192.168.1.10:25555/api/ets2/telemetry" style="flex-grow: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label for="telemetry-url" style="color: var(--accent-blue); font-weight: bold; margin: 0; font-size: 0.9rem;">Endereço IP do Servidor de Telemetria (LocalBase)</label>
+                    <span id="marquee-edit-hint" style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.85; cursor: pointer;"><i class="fa fa-pencil-alt"></i> Toque p/ editar</span>
                 </div>
-
+                
+                <!-- Container do Letreiro Contínuo de Verdade -->
+                <div id="telemetry-marquee-box" class="telemetry-marquee-container" title="Toque para editar o endereço IP">
+                    <div id="telemetry-marquee-content" class="telemetry-marquee-track">
+                        <span class="marquee-item" id="marquee-text-1">http://192.168.1.167:25555/api/ets2/telemetry</span>
+                        <span class="marquee-separator">★</span>
+                        <span class="marquee-item" id="marquee-text-2">http://192.168.1.167:25555/api/ets2/telemetry</span>
+                        <span class="marquee-separator">★</span>
+                    </div>
+                    <input type="text" id="telemetry-url" value="http://192.168.1.167:25555/api/ets2/telemetry"
+                        placeholder="Ex: http://192.168.1.10:25555/api/ets2/telemetry"
+                        style="display: none; width: 100%; height: 100%; background: transparent; border: none; outline: none; padding: 0 10px; color: var(--text-primary); font-size: 0.95rem; font-family: monospace;">
+                </div>
             </div>
 
             <!-- Painel Ao Vivo -->
